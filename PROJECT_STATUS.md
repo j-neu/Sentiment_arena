@@ -2,7 +2,7 @@
 
 **Date:** October 24, 2025
 **Version:** 1.0.0
-**Status:** ✅ **PRODUCTION READY**
+**Status:** ✅ **READY FOR 1-WEEK LOCAL TEST**
 
 ---
 
@@ -65,6 +65,13 @@
 - Real-time WebSocket updates
 - Dark theme (Alpha Arena inspired)
 - Responsive design
+
+### ✅ Phase 8.2: Local Deployment (Windows)
+- Persistent backend runner with auto-restart
+- Manual trading session script
+- Market status checking
+- 1-week local test guide
+- Comprehensive logging and monitoring
 
 ---
 
@@ -331,13 +338,14 @@ See **QUICKSTART.md** for detailed instructions.
 - [ ] Alpha Vantage API key (optional, for fundamentals)
 - [ ] Finnhub API key (optional, for sentiment)
 - [ ] Active models list in `.env`
+- [ ] Windows power settings (prevent sleep)
 
-### 🔄 Needs Testing
-- [ ] End-to-end trading flow with real API keys
-- [ ] Scheduler in production (24/7)
-- [ ] Multiple concurrent users
+### 🔄 Currently Testing
+- [ ] 1-week local test on Windows PC
+- [ ] Persistent backend runner (24/7 operation)
+- [ ] Automated trading (2x per day)
+- [ ] Model performance evaluation
 - [ ] Long-running stability
-- [ ] Error recovery
 
 ---
 
@@ -411,25 +419,33 @@ See **QUICKSTART.md** for detailed instructions.
 
 ## Next Steps
 
-### Immediate (Optional)
-1. Add OpenRouter API key to `.env`
-2. Test a full trading cycle
-3. Customize trading strategies
-4. Monitor the competition
+### Current: 1-Week Local Test
+1. [x] Install persistent backend runner
+2. [x] Configure environment variables
+3. [ ] Start backend: `run_backend_persistent.bat`
+4. [ ] Monitor for 1 week (check daily)
+5. [ ] Analyze results and performance
+6. [ ] Evaluate model effectiveness
 
-### Short Term (Phase 7)
-1. Add E2E tests
-2. Performance optimization
-3. Error handling improvements
-4. Loading states and skeletons
-5. Accessibility (a11y)
+### After 1 Week: Evaluation
+1. Export all trades to CSV
+2. Review leaderboard rankings
+3. Analyze P&L and win rates
+4. Review model reasoning logs
+5. Identify best/worst strategies
 
-### Medium Term (Phase 8)
-1. Docker deployment
-2. Production database
-3. Monitoring and logging
-4. Security audit
-5. Performance tuning
+### If Successful: Production Deployment
+1. Move to Raspberry Pi (24/7 operation)
+2. Set up systemd service
+3. Configure remote monitoring
+4. Add backup strategy
+5. Implement alerting
+
+### If Needs Work: Iteration
+1. Adjust trading prompts
+2. Refine model parameters
+3. Test different strategies
+4. Analyze failure patterns
 
 ### Long Term (Phase 9)
 1. Advanced features (limit orders, etc.)

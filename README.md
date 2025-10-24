@@ -90,7 +90,7 @@ sentiment_arena/
 
 ## Quick Start (5 Minutes)
 
-### Windows - One-Click Startup
+### Option 1: Demo Mode (Test Once)
 
 Simply double-click: **`start_all.bat`**
 
@@ -104,6 +104,32 @@ This automatically:
 - **Frontend:** http://localhost:3000
 - **Backend API:** http://localhost:8000
 - **API Docs:** http://localhost:8000/docs
+
+### Option 2: Persistent Mode (1-Week Test)
+
+For continuous operation with automated trading:
+
+**Double-click:** `run_backend_persistent.bat`
+
+This will:
+- Run backend 24/7 with auto-restart
+- Automatically trade at 8:30 AM and 2:00 PM CET
+- Update positions every 15 minutes
+- Store all results in database
+
+**Access the frontend when you want to view results:**
+- Start: `start_frontend.bat`
+- Open: http://localhost:3000
+
+**See [DEPLOYMENT_LOCAL.md](DEPLOYMENT_LOCAL.md) for complete 1-week test guide.**
+
+### Option 3: Manual Trading (On-Demand)
+
+Run trading sessions manually at your convenience:
+
+**Double-click:** `run_manual_trading.bat`
+
+Run this 2x per day (8:30 AM and 2:00 PM recommended) to simulate automated trading.
 
 ### Manual Setup
 
@@ -120,17 +146,16 @@ pip install -r requirements.txt
 python backend/database/init_db.py
 python scripts/init_demo_data.py
 
-# 3. Start servers
-# Terminal 1 - Backend
-python -m uvicorn backend.main:app --reload --port 8000
+# 3. Choose your mode:
+# Persistent (recommended for 1-week test)
+run_backend_persistent.bat
 
-# Terminal 2 - Frontend
-cd frontend
-npm install
-npm run dev
+# Manual (run 2x per day)
+run_manual_trading.bat
+
+# Demo (test once)
+start_all.bat
 ```
-
-**Access:** http://localhost:3000
 
 ## Configuration
 
@@ -169,7 +194,7 @@ AFTERNOON_RESEARCH_HOUR=14
 
 ## What's Included
 
-### ✅ Completed Features (Phases 1-6)
+### ✅ Completed Features (Phases 1-6 + Local Deployment)
 
 **Backend (Python/FastAPI):**
 - ✅ Paper trading engine with market orders
@@ -191,25 +216,38 @@ AFTERNOON_RESEARCH_HOUR=14
 - ✅ Real-time WebSocket updates
 - ✅ Dark theme (Alpha Arena inspired)
 
+**Deployment (Windows):**
+- ✅ Persistent backend runner with auto-restart
+- ✅ Manual trading script for on-demand sessions
+- ✅ 1-week local test guide
+- ✅ Market status checking
+- ✅ Comprehensive logging
+
 **Testing:**
 - ✅ 253 unit tests (100% passing)
 - ✅ All core functionality tested
 
 **Documentation:**
 - ✅ Quick start guide (QUICKSTART.md)
+- ✅ Local deployment guide (DEPLOYMENT_LOCAL.md)
 - ✅ Project status (PROJECT_STATUS.md)
 - ✅ Phase completion docs (PHASE_1-6_COMPLETE.md)
 - ✅ API documentation (Swagger/ReDoc)
 
-### 📋 Next Steps (Optional)
+### 📋 Next Steps
 
 See [TASKS.md](TASKS.md) for the full roadmap.
+
+**Current: 1-Week Local Test**
+- Run on local PC for 1 week
+- Evaluate trading performance
+- Analyze model effectiveness
 
 **Phase 7 - Testing & Optimization:**
 - E2E tests, performance tuning, accessibility
 
-**Phase 8 - Deployment:**
-- Docker, production database, monitoring
+**Phase 8.3 - Production Deployment:**
+- Raspberry Pi setup, Docker, remote monitoring
 
 **Phase 9 - Enhancements:**
 - Limit orders, backtesting, multi-market support

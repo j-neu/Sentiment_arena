@@ -12,9 +12,31 @@ Get the AI trading competition running in 5 minutes!
 
 ---
 
-## Option 1: Automated Start (Windows)
+## Choose Your Mode
 
-### One-Click Startup
+### Option 1: Demo Mode (Test Once)
+
+**Quick test:** `start_all.bat`
+
+Perfect for: First-time exploration, testing features
+
+### Option 2: Persistent Mode (1-Week Test) ⭐ RECOMMENDED
+
+**24/7 operation:** `run_backend_persistent.bat`
+
+Perfect for: Evaluating trading performance over 1 week
+
+### Option 3: Manual Trading (On-Demand)
+
+**Manual sessions:** `run_manual_trading.bat`
+
+Perfect for: Running specific trading sessions at your convenience
+
+---
+
+## Detailed Setup
+
+### Option 1: Demo Mode - One-Click Startup
 
 Simply double-click: **`start_all.bat`**
 
@@ -31,7 +53,41 @@ This will:
 
 ---
 
-## Option 2: Manual Setup
+### Option 2: Persistent Mode - 1-Week Test ⭐
+
+**For continuous automated trading:**
+
+**Step 1:** Double-click `run_backend_persistent.bat`
+
+This will:
+- Run backend 24/7 with auto-restart
+- Automatically trade at 8:30 AM and 2:00 PM CET
+- Update positions every 15 minutes
+- Store all results in database
+
+**Step 2:** Check results anytime by running `start_frontend.bat`
+
+**See [DEPLOYMENT_LOCAL.md](DEPLOYMENT_LOCAL.md) for complete guide.**
+
+---
+
+### Option 3: Manual Trading - On-Demand
+
+**For manual control:**
+
+**Double-click:** `run_manual_trading.bat`
+
+Run this 2x per day (8:30 AM and 2:00 PM recommended) to simulate automated trading.
+
+The script will:
+- Check market status
+- Run research for all models
+- Execute trades
+- Show progress and results
+
+---
+
+## Manual Installation (If Needed)
 
 ### Step 1: Install Backend Dependencies
 

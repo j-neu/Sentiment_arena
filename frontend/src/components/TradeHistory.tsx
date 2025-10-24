@@ -272,22 +272,27 @@ export function TradeHistory() {
                         <span className="font-semibold text-dark-text">{trade.symbol}</span>
                         <span>{timeAgo}</span>
                       </div>
-                      <div>
-                        Price: {formatCurrency(trade.price)} ➜ {formatCurrency(trade.price)}
-                      </div>
-                      <div>Quantity: {trade.quantity}</div>
-                      <div>
-                        Notional: {formatCurrency(trade.total - trade.fee)} ➜ {formatCurrency(trade.total - trade.fee)}
-                      </div>
-                      <div>
-                        Holding time: <span className="text-dark-text">{isLong ? '1h 30m' : '2h 45m'}</span>
-                      </div>
-                      <div className="pt-2 border-t border-dark-border mt-2">
-                        NET P&L:{' '}
-                        <span className={clsx('font-bold', Math.random() > 0.5 ? 'text-profit' : 'text-loss')}>
-                          {Math.random() > 0.5 ? '+' : '-'}
-                          {formatCurrency(Math.random() * 100)}
-                        </span>
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-2">
+                        <div>
+                          <span className="text-xs uppercase">Price:</span>{' '}
+                          <span className="text-dark-text">{formatCurrency(trade.price)}</span>
+                        </div>
+                        <div>
+                          <span className="text-xs uppercase">Quantity:</span>{' '}
+                          <span className="text-dark-text">{trade.quantity}</span>
+                        </div>
+                        <div>
+                          <span className="text-xs uppercase">Fee:</span>{' '}
+                          <span className="text-dark-text">{formatCurrency(trade.fee)}</span>
+                        </div>
+                        <div>
+                          <span className="text-xs uppercase">Total:</span>{' '}
+                          <span className="text-dark-text font-semibold">{formatCurrency(trade.total)}</span>
+                        </div>
+                        <div className="col-span-2">
+                          <span className="text-xs uppercase">Status:</span>{' '}
+                          <span className="text-profit font-semibold">{trade.status}</span>
+                        </div>
                       </div>
                     </div>
                   </div>

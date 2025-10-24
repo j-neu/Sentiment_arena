@@ -43,7 +43,9 @@ async def lifespan(app: FastAPI):
     global scheduler
     try:
         logger.info("Initializing trading scheduler...")
-        market_data = MarketDataService()
+        # Create a database session for market data service
+        db = SessionLocal()
+        market_data = MarketDataService(db)
         scheduler = TradingScheduler(
             market_data_service=market_data,
             openrouter_api_key=settings.OPENROUTER_API_KEY,
@@ -53,7 +55,7 @@ async def lifespan(app: FastAPI):
         scheduler.start()
         logger.info("Trading scheduler started successfully")
     except Exception as e:
-        logger.error(f"Failed to start scheduler: {e}")
+        logger.error(f"Failed to start scheduler: {e}", exc_info=True)
         scheduler = None
 
     logger.info("Sentiment Arena API is ready!")

@@ -148,6 +148,61 @@ export function Models() {
                 </div>
               </div>
 
+              {/* Portfolio Composition */}
+              {portfolio.positions.length > 0 && (
+                <div className="card">
+                  <h3 className="text-lg font-semibold mb-4">Portfolio Composition</h3>
+                  <div className="h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={[
+                            { name: 'Cash', value: performance.current_balance },
+                            ...portfolio.positions.map(p => ({
+                              name: p.symbol,
+                              value: p.position_value
+                            }))
+                          ]}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                          outerRadius={100}
+                          fill="#8884d8"
+                          dataKey="value"
+                        >
+                          {[
+                            { name: 'Cash', value: performance.current_balance },
+                            ...portfolio.positions.map(p => ({
+                              name: p.symbol,
+                              value: p.position_value
+                            }))
+                          ].map((entry, index) => {
+                            const COLORS = ['#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#ef4444', '#06b6d4', '#6366f1']
+                            return <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          })}
+                        </Pie>
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: '#1a1a1a',
+                            border: '1px solid #333',
+                            borderRadius: '8px',
+                            color: '#e5e5e5'
+                          }}
+                          formatter={(value: number) => formatCurrency(value)}
+                        />
+                        <Legend
+                          wrapperStyle={{ color: '#9ca3af' }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="mt-4 text-sm text-dark-muted text-center">
+                    Total Portfolio Value: {formatCurrency(performance.total_value)}
+                  </div>
+                </div>
+              )}
+
               {/* Performance Metrics */}
               <div className="card">
                 <h3 className="text-lg font-semibold mb-4">Performance Metrics</h3>
