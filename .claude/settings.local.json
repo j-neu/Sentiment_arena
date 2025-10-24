@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(mkdir:*)",
+      "Bash(python -m venv:*)",
+      "Bash(.venvScriptsactivate)",
+      "Bash(pip install:*)",
+      "Bash(venvScriptspip.exe install alembic sqlalchemy pydantic-settings python-dotenv)",
+      "Bash(\"./venv/Scripts/alembic.exe\" init backend/database/migrations)",
+      "Bash(\"./venv/Scripts/alembic.exe\" revision --autogenerate -m \"Initial schema with models, portfolios, positions, trades, reasoning, market_data\")",
+      "Bash(tree:*)",
+      "Bash(findstr:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(venv/Scripts/alembic.exe revision:*)",
+      "Bash(venv/Scripts/alembic.exe upgrade:*)",
+      "Bash(python:*)",
+      "WebSearch",
+      "Bash(venvScriptspython.exe -m uvicorn backend.main:app --reload --port 8000)",
+      "Bash(\"./venv/Scripts/python.exe\" -m uvicorn backend.main:app --reload --port 8000)",
+      "Bash(\"./venv/Scripts/pip.exe\" install fastapi uvicorn[standard] websockets)",
+      "Bash(\"./venv/Scripts/pip.exe\" install -r requirements.txt)",
+      "Bash(curl:*)",
+      "Bash(taskkill:*)",
+      "Bash(npm init:*)",
+      "Bash(npm install:*)",
+      "Bash(./venv/Scripts/python.exe -m uvicorn:*)",
+      "Bash(npm run dev)",
+      "Bash(./venv/Scripts/python.exe:*)",
+      "Bash(find:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

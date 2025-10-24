@@ -1,0 +1,38 @@
+# Web Framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+websockets==12.0
+
+# Database
+sqlalchemy==2.0.23
+alembic==1.12.1
+psycopg2-binary==2.9.9
+
+# Market Data
+yfinance==0.2.32
+pandas-ta==0.4.71b0
+
+# LLM & AI
+openai==1.3.7
+httpx==0.25.1
+requests==2.31.0
+urllib3==2.1.0
+
+# Scheduling
+apscheduler==3.10.4
+
+# Utilities
+python-dotenv==1.0.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+pytz==2023.3.post1
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+
+# Development
+black==23.11.0
+flake8==6.1.0
+mypy==1.7.1
