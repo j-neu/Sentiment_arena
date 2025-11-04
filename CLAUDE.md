@@ -44,10 +44,30 @@ Sentiment Arena is an AI-powered stock trading competition where multiple LLM mo
 - Caching to avoid rate limits
 - Market hours and trading day validation
 
-#### Research System (`backend/services/research.py`)
-- Web search integration for financial news
-- Targets: thefly.com, biztoc.com, forexfactory.com, finance.yahoo.com
-- News aggregation, deduplication, and relevance ranking
+#### Research System (`backend/services/research.py`, `rss_news_fetcher.py`, `market_momentum.py`)
+- **RSS feed integration** for all 40 DAX stocks (Yahoo Finance, Reuters, MarketWatch, Seeking Alpha)
+- **Market momentum scoring** - Tracks news volume per stock (24-hour window)
+- **Dynamic stock discovery** - Identifies trending stocks beyond current positions
+- **Smart selection** - Researches 10 most relevant stocks (positions + trending)
+- **News aggregation** - Combines RSS + Finnhub + Alpha Vantage news
+- **Web search fallback** - DuckDuckGo with retry logic when RSS unavailable
+- **Deduplication and ranking** - Removes duplicates, ranks by relevance and recency
+
+#### Market Momentum System (`backend/services/market_momentum.py`)
+- Monitors all 40 DAX stocks via RSS feeds
+- Calculates news momentum score (0-100) based on article volume
+- Identifies trending stocks (high news activity = potential opportunities)
+- Smart stock selection algorithm:
+  - Current positions (top 5 by value)
+  - Trending stocks (top 5 by news momentum)
+  - Total: ~10 stocks researched per session
+- Enables dynamic response to market events
+- Example: If BMW announces major partnership (50 articles), models will research it
+
+**Why this matters:**
+- Static 3-stock research misses opportunities
+- Dynamic discovery responds to real market movements
+- Models compete on information quality, not just list position
 
 #### Scheduler (`backend/services/scheduler.py`)
 - Pre-market research trigger (before 9:00 AM CET)
@@ -124,11 +144,20 @@ Copy `.env.example` to `.env` and configure:
 
 ## Key Implementation Notes
 
+### Research Pipeline
+- **Stage 1: Market Monitoring** - RSS feeds track all 40 DAX stocks continuously
+- **Stage 2: Momentum Scoring** - Calculate news volume per stock (last 24 hours)
+- **Stage 3: Stock Selection** - Choose 10 most relevant (positions + trending)
+- **Stage 4: Complete Research** - Technical + Fundamental + News analysis for selected stocks
+- **Stage 5: LLM Synthesis** - Enhanced research pipeline with quality verification
+- **Stage 6: Trading Decision** - LLM receives full context including market momentum
+
 ### LLM Prompt Design
 Prompts should include:
 - Current portfolio state (cash, positions, total value)
 - Market data for relevant stocks
 - Research findings (news, sentiment)
+- **Market momentum summary** - Trending stocks and article counts
 - Trading rules and constraints
 - Expected JSON response format
 

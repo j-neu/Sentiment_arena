@@ -110,7 +110,7 @@ async def get_portfolio(model_id: int, db: Session = Depends(get_db)):
             "avg_price": decimal_to_float(position.avg_price),
             "current_price": decimal_to_float(position.current_price),
             "unrealized_pl": decimal_to_float(position.unrealized_pl),
-            "unrealized_pl_pct": decimal_to_float(position.unrealized_pl_pct),
+            "unrealized_pl_pct": decimal_to_float(position.unrealized_pl_percentage),
             "position_value": decimal_to_float(position.position_value),
             "opened_at": position.opened_at.isoformat() if position.opened_at else None
         })
@@ -121,8 +121,7 @@ async def get_portfolio(model_id: int, db: Session = Depends(get_db)):
         "current_balance": decimal_to_float(portfolio.current_balance),
         "total_value": decimal_to_float(portfolio.total_value),
         "total_pl": decimal_to_float(portfolio.total_pl),
-        "total_pl_pct": decimal_to_float(portfolio.total_pl_pct),
-        "realized_pl": decimal_to_float(portfolio.realized_pl),
+        "total_pl_pct": decimal_to_float(portfolio.total_pl_percentage),
         "num_positions": len(positions),
         "positions": positions_data
     }
@@ -155,7 +154,7 @@ async def get_positions(model_id: int, db: Session = Depends(get_db)):
             "avg_price": decimal_to_float(position.avg_price),
             "current_price": decimal_to_float(position.current_price),
             "unrealized_pl": decimal_to_float(position.unrealized_pl),
-            "unrealized_pl_pct": decimal_to_float(position.unrealized_pl_pct),
+            "unrealized_pl_pct": decimal_to_float(position.unrealized_pl_percentage),
             "position_value": decimal_to_float(position.position_value),
             "opened_at": position.opened_at.isoformat() if position.opened_at else None,
             "updated_at": position.updated_at.isoformat() if position.updated_at else None
@@ -194,7 +193,7 @@ async def get_trades(
     trades = (
         db.query(Trade)
         .filter(Trade.model_id == model_id)
-        .order_by(desc(Trade.timestamp))
+        .order_by(desc(Trade.executed_at))
         .offset(skip)
         .limit(limit)
         .all()
@@ -211,7 +210,7 @@ async def get_trades(
             "fee": decimal_to_float(trade.fee),
             "total": decimal_to_float(trade.total),
             "status": trade.status.value if trade.status else None,
-            "timestamp": trade.timestamp.isoformat() if trade.timestamp else None
+            "timestamp": trade.executed_at.isoformat() if trade.executed_at else None
         })
 
     return {
@@ -244,11 +243,11 @@ async def get_performance(model_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Portfolio not found")
 
     # Get trading engine for metrics
-    trading_engine = TradingEngine(db)
+    trading_engine = TradingEngine(db, MarketDataService(db))
 
     # Get performance metrics
     try:
-        metrics = trading_engine.get_portfolio_metrics(model_id)
+        metrics = trading_engine.get_performance_metrics(model_id)
 
         return {
             "model_id": model_id,
@@ -257,8 +256,7 @@ async def get_performance(model_id: int, db: Session = Depends(get_db)):
             "current_balance": decimal_to_float(portfolio.current_balance),
             "total_value": decimal_to_float(portfolio.total_value),
             "total_pl": decimal_to_float(portfolio.total_pl),
-            "total_pl_pct": decimal_to_float(portfolio.total_pl_pct),
-            "realized_pl": decimal_to_float(portfolio.realized_pl),
+            "total_pl_pct": decimal_to_float(portfolio.total_pl_percentage),
             "unrealized_pl": decimal_to_float(metrics.get("unrealized_pl", 0)),
             "total_trades": metrics.get("total_trades", 0),
             "winning_trades": metrics.get("winning_trades", 0),
@@ -278,8 +276,7 @@ async def get_performance(model_id: int, db: Session = Depends(get_db)):
             "current_balance": decimal_to_float(portfolio.current_balance),
             "total_value": decimal_to_float(portfolio.total_value),
             "total_pl": decimal_to_float(portfolio.total_pl),
-            "total_pl_pct": decimal_to_float(portfolio.total_pl_pct),
-            "realized_pl": decimal_to_float(portfolio.realized_pl),
+            "total_pl_pct": decimal_to_float(portfolio.total_pl_percentage),
             "error": str(e)
         }
 
@@ -309,7 +306,7 @@ async def get_reasoning(
     reasoning_entries = (
         db.query(Reasoning)
         .filter(Reasoning.model_id == model_id)
-        .order_by(desc(Reasoning.timestamp))
+        .order_by(desc(Reasoning.created_at))
         .limit(limit)
         .all()
     )
@@ -318,11 +315,11 @@ async def get_reasoning(
     for entry in reasoning_entries:
         result.append({
             "id": entry.id,
-            "timestamp": entry.timestamp.isoformat() if entry.timestamp else None,
+            "timestamp": entry.created_at.isoformat() if entry.created_at else None,
             "decision": entry.decision,
             "reasoning_text": entry.reasoning_text,
             "research_content": entry.research_content,
-            "confidence": entry.confidence,
+            # "confidence": entry.confidence,  # Field doesn't exist in model
             "raw_response": entry.raw_response
         })
 
@@ -359,8 +356,7 @@ async def get_leaderboard(db: Session = Depends(get_db)):
             "api_identifier": model.api_identifier,
             "total_value": decimal_to_float(portfolio.total_value),
             "total_pl": decimal_to_float(portfolio.total_pl),
-            "total_pl_pct": decimal_to_float(portfolio.total_pl_pct),
-            "realized_pl": decimal_to_float(portfolio.realized_pl),
+            "total_pl_pct": decimal_to_float(portfolio.total_pl_percentage),
             "current_balance": decimal_to_float(portfolio.current_balance),
             "num_positions": num_positions,
             "num_trades": num_trades
@@ -371,14 +367,14 @@ async def get_leaderboard(db: Session = Depends(get_db)):
 
 
 @router.get("/market/status", response_model=Dict[str, Any])
-async def get_market_status():
+async def get_market_status(db: Session = Depends(get_db)):
     """
     Get current market status
 
     Returns:
         Market open/closed status and next market event
     """
-    market_data = MarketDataService()
+    market_data = MarketDataService(db)
 
     try:
         is_open = market_data.is_market_open()

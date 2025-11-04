@@ -358,9 +358,13 @@ The scheduler will automatically trade during German market hours!
 ✅ **6 AI Models** competing with €1,000 each
 ✅ **Real-time Dashboard** with live updates
 ✅ **Automated Trading** twice daily (8:30 AM, 2 PM CET)
+✅ **Dynamic Stock Discovery** - Monitors all 40 DAX stocks
+✅ **Market Momentum Tracking** - Identifies trending stocks
+✅ **RSS News Integration** - Yahoo Finance, Reuters, MarketWatch
+✅ **10-Stock Research** - Smart selection (positions + trending)
 ✅ **German Stocks** (XETRA/DAX)
 ✅ **Paper Trading** (no real money)
-✅ **Research Pipeline** with LLM-powered analysis
+✅ **Intelligent Research** - LLM-powered analysis with quality checks
 ✅ **Technical Analysis** (RSI, MACD, Bollinger Bands, etc.)
 ✅ **Financial APIs** (Alpha Vantage, Finnhub)
 ✅ **Performance Tracking** (P&L, win rate, ROI)

@@ -17,6 +17,26 @@ Number of Open Positions: {num_positions}
 
 {research_content}
 
+=== ENHANCED ANALYSIS GUIDANCE ===
+The research briefing above includes:
+- Recent Events with specific dates and numbers
+- Sentiment Analysis with analyst consensus and news breakdown
+- Risk Factors with severity ratings and timeframes
+- Technical Analysis with indicators, levels, and signals
+- Fundamental Metrics with valuation, growth, and profitability
+- Opportunities with impact assessment and timelines
+- Contextual Information including sector performance and peer comparison
+- Uncertainty Quantification with confidence levels and data freshness
+- Source Quality Assessment with credibility breakdown
+
+Pay special attention to:
+1. Uncertainty levels - High uncertainty requires more caution
+2. Data freshness - Older data may be less reliable
+3. Source credibility - Prioritize high-credibility sources
+4. Contradictions - Note conflicting information and resolution attempts
+5. Context - Consider sector performance and market regime
+6. Risk-reward - Weigh potential returns against quantified risks
+
 === TRADING RULES ===
 - Starting Capital: €1,000
 - Trading Fee: €5 per trade (buy or sell)
@@ -26,13 +46,25 @@ Number of Open Positions: {num_positions}
 - No leverage allowed
 - Strategy: Swing trading (hold positions for multiple days)
 
+=== AVAILABLE STOCKS (Examples) ===
+You can trade any German stock on XETRA/DAX exchange. Popular DAX-40 stocks include:
+- SAP.DE (SAP SE - Software)
+- SIE.DE (Siemens AG - Industrial)
+- AIR.DE (Airbus SE - Aerospace)
+- VOW3.DE (Volkswagen - Automotive)
+- ALV.DE (Allianz SE - Insurance)
+- BAS.DE (BASF SE - Chemicals)
+- BMW.DE (BMW - Automotive)
+- MBG.DE (Mercedes-Benz - Automotive)
+- And many more DAX-40 stocks...
+
 === AVAILABLE ACTIONS ===
 1. BUY: Purchase shares of a stock (must have sufficient balance)
 2. SELL: Sell shares of a stock (must have existing position)
 3. HOLD: Take no action this session
 
 === YOUR TASK ===
-Based on the above information, decide what trading action to take.
+Based on the enhanced research briefing and your analysis, decide what trading action to take.
 
 You must respond with a valid JSON object in the following format:
 
@@ -43,7 +75,10 @@ You must respond with a valid JSON object in the following format:
     "reasoning": "Your detailed reasoning for this decision",
     "confidence": "HIGH" | "MEDIUM" | "LOW",
     "market_outlook": "Your assessment of current market conditions",
-    "risk_assessment": "Your assessment of risks in this trade"
+    "risk_assessment": "Your assessment of risks in this trade",
+    "uncertainty_acknowledged": "Brief description of key uncertainties you considered",
+    "data_freshness": "How recent is the critical data driving your decision",
+    "source_reliability": "Assessment of source reliability for key information"
 }}
 
 Important:
@@ -51,6 +86,9 @@ Important:
 - Ensure sufficient balance for buy orders (price * quantity + fee)
 - Only sell positions you currently hold
 - Provide clear reasoning for your decision
-- Consider market sentiment and news in your analysis
+- Explicitly acknowledge uncertainties in your reasoning
+- Consider data freshness when making time-sensitive decisions
+- Weigh source reliability when conflicting information exists
+- Use contextual information (sector performance, market regime) in your analysis
 
-Respond with ONLY the JSON object, no additional text.
+Respond with ONLY a JSON object, no additional text.

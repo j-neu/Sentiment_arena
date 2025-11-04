@@ -35,7 +35,7 @@ def init_demo_data():
             },
             {
                 "name": "Claude Sonnet 4.5",
-                "api_identifier": "anthropic/claude-sonnet-4-5",
+                "api_identifier": "anthropic/claude-4.5-sonnet-20250929",
                 "starting_balance": 1000.0
             },
             {
@@ -45,7 +45,7 @@ def init_demo_data():
             },
             {
                 "name": "DeepSeek V3.1",
-                "api_identifier": "deepseek/deepseek-v3.1",
+                "api_identifier": "deepseek/deepseek-chat-v3.1",
                 "starting_balance": 1000.0
             },
             {
@@ -55,7 +55,7 @@ def init_demo_data():
             },
             {
                 "name": "GLM 4.6",
-                "api_identifier": "zhipuai/glm-4.6",
+                "api_identifier": "z-ai/glm-4.6",
                 "starting_balance": 1000.0
             },
             {

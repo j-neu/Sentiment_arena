@@ -61,8 +61,8 @@ class CompleteResearchOrchestrator:
         self.technical_analysis = TechnicalAnalysisService(lookback_days=90)
 
         self.financial_aggregator = FinancialDataAggregator(
-            alphavantage_api_key=alphavantage_api_key,
-            finnhub_api_key=finnhub_api_key
+            alphavantage_key=alphavantage_api_key,
+            finnhub_key=finnhub_api_key
         )
 
         self.enhanced_research = EnhancedResearchPipeline(

@@ -1,8 +1,24 @@
 # Sentiment Arena - Stock Trading Edition
 
-**Status:** ✅ **PRODUCTION READY** | **Version:** 1.0.0
+**Status:** ⚠️ **CRITICAL BUGS DISCOVERED** | **Version:** 1.0.0-RC
 
 An AI-powered stock trading competition where multiple LLM models compete against each other in swing trading German stocks using real market data.
+
+---
+
+## 🚨 URGENT: Critical API Bugs Discovered
+
+**DO NOT DEPLOY TO PRODUCTION** - Integration tests discovered 3 critical bugs that will cause crashes:
+
+1. **Portfolio endpoint field naming errors** - References non-existent fields
+2. **MarketDataService initialization error** - Missing required `db` parameter
+3. **API field naming inconsistencies** - Field names don't match database models
+
+**Status:** Bugs documented in [TASKS.md Phase 7.0](TASKS.md#70-critical-api-bug-fixes-must-fix-before-deployment-) - MUST FIX BEFORE DEPLOYMENT
+
+See [PHASE_7.1_API_TESTS.md](PHASE_7.1_API_TESTS.md) for full details.
+
+---
 
 🎉 **Phases 1-6 Complete!** Full-stack application with backend API, automated trading, and web UI.
 
@@ -20,7 +36,10 @@ The models research the market twice daily (pre-market and 2 PM CET) and can hol
 
 - **Multi-Model Competition**: Different LLM models from OpenRouter compete with identical starting capital
 - **Real Market Data**: Live German stock prices via Yahoo Finance API
-- **Intelligent Research**: Models perform internet searches for news, sentiment, and analysis
+- **Dynamic Stock Discovery**: RSS-based monitoring of all 40 DAX stocks
+- **Market Momentum Tracking**: Identifies trending stocks based on news volume
+- **Smart Research Selection**: Focuses on 10 most relevant stocks per session
+- **Intelligent Research**: Models perform comprehensive analysis with news, sentiment, and technical indicators
 - **Realistic Trading**: €5 flat fee per trade (Flatex structure), market hours enforcement
 - **Paper Trading**: Risk-free simulation with real market conditions
 - **Full Transparency**: View each model's reasoning, positions, and trade history
@@ -200,6 +219,10 @@ AFTERNOON_RESEARCH_HOUR=14
 - ✅ Paper trading engine with market orders
 - ✅ Real-time German stock data (yfinance)
 - ✅ LLM agent system (OpenRouter - 40+ models)
+- ✅ RSS news feed integration (Yahoo Finance, Reuters, MarketWatch, Seeking Alpha)
+- ✅ Market momentum scoring for all 40 DAX stocks
+- ✅ Dynamic trending stock discovery
+- ✅ Smart 10-stock selection per session
 - ✅ Enhanced research pipeline with quality verification
 - ✅ Financial data APIs (Alpha Vantage + Finnhub)
 - ✅ Technical analysis (RSI, MACD, Bollinger Bands, etc.)
@@ -251,6 +274,26 @@ See [TASKS.md](TASKS.md) for the full roadmap.
 
 **Phase 9 - Enhancements:**
 - Limit orders, backtesting, multi-market support
+
+---
+
+## Documentation
+
+### Current Documentation
+- **[README.md](README.md)** - This file (project overview)
+- **[QUICKSTART.md](QUICKSTART.md)** - 5-minute setup guide
+- **[PROJECT_STATUS.md](PROJECT_STATUS.md)** - Current system status and metrics
+- **[TASKS.md](TASKS.md)** - Implementation roadmap
+- **[DEPLOYMENT_LOCAL.md](DEPLOYMENT_LOCAL.md)** - Local deployment guide
+- **[CLAUDE.md](CLAUDE.md)** - Architecture and development guidelines
+- **[RESEARCH_QUALITY.md](RESEARCH_QUALITY.md)** - Research system design
+- **[PROMPT_TEMPLATES.md](PROMPT_TEMPLATES.md)** - Trading strategy prompts
+
+### Historical Documentation
+- **[DEVELOPMENT_HISTORY.md](DEVELOPMENT_HISTORY.md)** - Complete development history from all phases (consolidates all PHASE_*.md files)
+- **[archive/](archive/)** - Archived phase completion documents
+
+---
 
 ## Contributing
 

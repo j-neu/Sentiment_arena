@@ -38,12 +38,14 @@ class ResearchModelMapper:
         "anthropic/claude-3-haiku": ("anthropic/claude-3-haiku-20240307", "Anthropic"),  # Already cheap
         "anthropic/claude-3.5-sonnet": ("anthropic/claude-3-haiku-20240307", "Anthropic"),
         "anthropic/claude-3-5-sonnet-20240620": ("anthropic/claude-3-haiku-20240307", "Anthropic"),
+        "anthropic/claude-4.5-sonnet-20250929": ("anthropic/claude-3-haiku-20240307", "Anthropic"),  # New Claude 4.5
 
         # Google models
         "google/gemini-pro": ("google/gemini-pro", "Google"),  # Already cheap
         "google/gemini-pro-vision": ("google/gemini-pro", "Google"),
         "google/gemini-1.5-pro": ("google/gemini-pro", "Google"),
         "google/gemini-flash": ("google/gemini-flash", "Google"),  # Already cheap
+        "google/gemini-2.5-flash": ("google/gemini-2.5-flash", "Google"),  # Already cheap (new)
 
         # Meta models
         "meta-llama/llama-3-70b-instruct": ("meta-llama/llama-3-8b-instruct", "Meta"),
@@ -61,6 +63,8 @@ class ResearchModelMapper:
         # DeepSeek models (already very cheap)
         "deepseek/deepseek-chat": ("deepseek/deepseek-chat", "DeepSeek"),
         "deepseek/deepseek-coder": ("deepseek/deepseek-coder", "DeepSeek"),
+        "deepseek/deepseek-chat-v3.1": ("deepseek/deepseek-chat-v3.1", "DeepSeek"),  # Already cheap
+        "deepseek/deepseek-v3.1-base": ("deepseek/deepseek-chat-v3.1", "DeepSeek"),
 
         # Cohere models
         "cohere/command-r-plus": ("cohere/command-r", "Cohere"),
@@ -70,6 +74,19 @@ class ResearchModelMapper:
         # Perplexity models
         "perplexity/llama-3-sonar-large-32k-online": ("perplexity/llama-3-sonar-small-32k-online", "Perplexity"),
         "perplexity/llama-3-sonar-small-32k-online": ("perplexity/llama-3-sonar-small-32k-online", "Perplexity"),
+
+        # X.AI models (Grok)
+        "x-ai/grok-code-fast-1": ("x-ai/grok-code-fast-1", "X.AI"),  # Already cheap
+
+        # Zhipu AI / Z.AI models (GLM)
+        "z-ai/glm-4.6": ("z-ai/glm-4.6", "Z.AI"),  # Already cheap
+        "zhipuai/glm-4.6": ("z-ai/glm-4.6", "Z.AI"),  # Old identifier, map to new
+
+        # Qwen models (Alibaba Cloud)
+        "qwen/qwen3-235b-a22b": ("qwen/qwen3-235b-a22b", "Qwen"),  # Already cheap
+        "qwen/qwen-turbo": ("qwen/qwen-turbo", "Qwen"),  # Already cheap
+        "qwen/qwen-plus": ("qwen/qwen-turbo", "Qwen"),
+        "qwen/qwen-max": ("qwen/qwen-turbo", "Qwen"),
     }
 
     @classmethod

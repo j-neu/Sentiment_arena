@@ -178,8 +178,15 @@ class MarketDataService:
                 return None
 
             # Check if cache is still valid
-            # Make timestamp timezone-aware if it isn't already
+            # Handle timestamp conversion (may be string from SQLite)
             cache_timestamp = cache_entry.timestamp
+
+            # Convert string to datetime if needed
+            if isinstance(cache_timestamp, str):
+                from dateutil import parser
+                cache_timestamp = parser.parse(cache_timestamp)
+
+            # Make timestamp timezone-aware if it isn't already
             if cache_timestamp.tzinfo is None:
                 cache_timestamp = cache_timestamp.replace(tzinfo=self.timezone)
 

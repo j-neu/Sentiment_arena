@@ -47,6 +47,7 @@ async def lifespan(app: FastAPI):
         db = SessionLocal()
         market_data = MarketDataService(db)
         scheduler = TradingScheduler(
+            db=db,
             market_data_service=market_data,
             openrouter_api_key=settings.OPENROUTER_API_KEY,
             alphavantage_api_key=settings.ALPHAVANTAGE_API_KEY,

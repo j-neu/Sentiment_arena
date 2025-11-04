@@ -30,13 +30,15 @@
 
 ### ✅ Phase 3: LLM Agent System
 - **3.1** - OpenRouter API integration (40+ models)
-- **3.2** - Internet research system (DuckDuckGo)
+- **3.2** - RSS news feed integration (4 sources, 40 stocks)
+- **3.2** - Market momentum scoring and trending detection
 - **3.3** - LLM agent with autonomous decision-making
 - **3.5.1** - Enhanced research pipeline with quality verification
 - **3.5.2** - Financial data APIs (Alpha Vantage + Finnhub)
 - **3.5.3** - Technical analysis (RSI, MACD, Bollinger Bands, etc.)
 - **3.5.4** - Research quality assurance system
 - **3.5.5** - Multi-model research orchestration with caching
+- **3.6** - Dynamic stock discovery system (NEW)
 
 ### ✅ Phase 4: Scheduling & Automation
 - APScheduler-based automation
@@ -86,8 +88,12 @@
 ✅ Trading fees (€5 flat fee)
 ✅ Market hours enforcement
 
-### Research & Analysis
-✅ Web search integration
+### Research & Analysis (Enhanced)
+✅ RSS feed monitoring (all 40 DAX stocks)
+✅ Market momentum scoring (24-hour news volume)
+✅ Dynamic trending stock detection
+✅ Smart 10-stock selection (positions + momentum)
+✅ Multi-source news aggregation (RSS + APIs)
 ✅ LLM-powered research synthesis
 ✅ Financial data APIs (fundamentals, earnings, analyst ratings)
 ✅ Technical analysis (8 indicators)
@@ -260,12 +266,15 @@
 - Message latency: <5ms
 - Reconnect: ~5s
 
-### Research Pipeline
-- Technical analysis: 3-7s
-- Financial APIs: 45-60s
-- Enhanced research: 15-35s
-- Complete research: 60-100s
-- Cost per stock: ~$0.012
+### Research Pipeline (Updated)
+- Market monitoring: All 40 DAX stocks tracked via RSS
+- Stock selection: 10 stocks per session (dynamic)
+- RSS feed fetching: ~5-10s for 40 stocks
+- Technical analysis: 3-7s per stock
+- Financial APIs: 45-60s per stock
+- Enhanced research: 15-35s per stock
+- Complete research: 120-180s total per model
+- Cost per session: ~$0.06 (up from $0.02, worth it)
 
 ### Trading
 - Order execution: <100ms
@@ -276,20 +285,21 @@
 
 ## Cost Analysis
 
-### Monthly Operating Costs
+### Monthly Operating Costs (Updated - Phase 8.2.2)
 
-**With Caching (Recommended):**
-- Research: ~$0.72/month (4 models, 2x/day)
+**With Dynamic Discovery (Current):**
+- RSS feeds: Free (unlimited)
+- Research (10 stocks): ~$8-10/month (7 models, 2x/day)
 - Trading decisions: ~$3.20/month
-- Financial APIs: Free tier
-- **Total: ~$3.92/month**
+- Financial APIs: Free tier (Alpha Vantage + Finnhub)
+- **Total: ~$12-15/month**
 
-**Without Caching:**
-- Research: ~$7.20/month
-- Trading decisions: ~$3.20/month
-- **Total: ~$10.40/month**
+**Cost Breakdown:**
+- Per research session: ~$0.06 (vs $0.02 for 3 stocks)
+- Per month: ~$12-15 (vs $4 broken, $3.92 originally planned)
+- **3-4x cost increase justified by 3.3x coverage increase (3 → 10 stocks) + dynamic discovery**
 
-**Cost Savings:** 75-90% with intelligent caching
+**Cost Savings:** 75-90% with intelligent caching still applies
 
 ---
 

@@ -1,6 +1,70 @@
+# Research Quality - Dynamic Stock Discovery System
+
+**Status:** ✅ IMPLEMENTED (Phase 8.2.2)
+**Last Updated:** 2025-10-29
+
+## Executive Summary
+
+The original design called for high-quality research across multiple sources. Phase 8.2.2 extends this with **dynamic stock discovery** - the ability to monitor all 40 DAX stocks and identify trending opportunities, not just research a static list.
+
+### Key Innovation: Market Momentum Awareness
+
+**Problem Solved:**
+- Static 3-stock research missed 92.5% of DAX stocks
+- If Stock Z had major news (acquisition, earnings beat, scandal), models were blind to it
+- No way to discover emerging opportunities beyond predetermined list
+
+**Solution:**
+- RSS feeds monitor all 40 DAX stocks continuously
+- Momentum scoring identifies trending stocks (high news volume)
+- Smart selection researches: positions (5) + trending (5) = 10 stocks
+- LLM receives market context: "VOW3.DE trending (47 articles): acquisition rumors"
+
+**Impact:**
+- Models respond to real market events
+- Dynamic opportunity discovery
+- Competition on information quality, not position in static list
+- Realistic swing trading behavior
+
+---
+
+## Research Architecture (Enhanced - Phase 8.2.2)
+
+### Layer 1: Market Monitoring (NEW)
+- **RSS News Fetcher** monitors all 40 DAX stocks
+- Fetches from: Yahoo Finance, Reuters, MarketWatch, Seeking Alpha
+- Runs continuously (1-hour cache refresh)
+- Extracts: headlines, summaries, dates, symbol mentions
+
+### Layer 2: Momentum Scoring (NEW)
+- Calculate news volume per stock (last 24 hours)
+- Score 0-100 based on article count and recency
+- Identify trending stocks (threshold: 3+ articles)
+- Multi-stock detection (headlines mentioning multiple symbols)
+
+### Layer 3: Stock Selection (NEW)
+- **Current positions** (top 5 by value) - always research
+- **Trending stocks** (top 5 by momentum) - dynamic discovery
+- **Total** ~10 stocks per session
+- If overlap, include more trending stocks
+
+### Layer 4: Complete Research (Existing)
+- Technical Analysis (pandas-ta)
+- Financial APIs (Alpha Vantage + Finnhub)
+- Enhanced Research Pipeline (LLM synthesis)
+- Quality Verification
+
+### Layer 5: Context Assembly (NEW)
+- Unified briefing per stock
+- Market momentum summary
+- Trending stocks list with article counts
+- Full context to trading LLM
+
+---
+
 # Research Quality & The "Garbage In, Garbage Out" Problem
 
-## Current State: Phase 3
+## Current State: Phase 3 + 8.2.2
 
 ### What We Have Now ✅
 

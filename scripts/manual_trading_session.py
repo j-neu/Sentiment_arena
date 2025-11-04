@@ -48,9 +48,9 @@ def get_current_cet_time():
     return datetime.now(cet_tz)
 
 
-def check_market_status():
+def check_market_status(db: SessionLocal):
     """Check if market is currently open"""
-    market_data = MarketDataService()
+    market_data = MarketDataService(db)
     is_open = market_data.is_market_open()
     is_trading_day = market_data.is_trading_day()
 
@@ -83,17 +83,21 @@ def run_trading_session(job_name: str = "manual_session"):
     print_banner()
 
     # Check market status
-    is_open, is_trading_day = check_market_status()
+    db = SessionLocal()
+    is_open, is_trading_day = check_market_status(db)
 
     print(f"Job Type: {job_name}")
     print("=" * 70)
     print()
 
     # Create services
-    db = SessionLocal()
-    trading_engine = TradingEngine(db)
-    market_data = MarketDataService()
-    research_orchestrator = MultiModelResearchOrchestrator()
+    market_data = MarketDataService(db)
+    trading_engine = TradingEngine(db, market_data)
+    research_orchestrator = MultiModelResearchOrchestrator(
+        openrouter_api_key=settings.OPENROUTER_API_KEY,
+        alphavantage_api_key=settings.ALPHAVANTAGE_API_KEY,
+        finnhub_api_key=settings.FINNHUB_API_KEY
+    )
 
     try:
         # Get all active models
@@ -120,25 +124,25 @@ def run_trading_session(job_name: str = "manual_session"):
             try:
                 # Create LLM agent for this model
                 agent = LLMAgent(
-                    model_id=model.id,
                     db=db,
+                    model_id=model.id,
                     trading_engine=trading_engine,
-                    market_data_service=market_data,
-                    research_orchestrator=research_orchestrator
+                    market_data_service=market_data
                 )
 
                 # Run trading decision
                 print(f"  → Running research and trading decision...")
-                result = agent.run_trading_decision()
+                result = agent.make_trading_decision()
 
                 if result.get('success'):
                     print(f"  ✓ Success!")
-                    if result.get('trades_executed'):
-                        print(f"  ✓ Executed {len(result['trades_executed'])} trades")
-                        for trade in result['trades_executed']:
-                            print(f"     • {trade['side']} {trade['quantity']} {trade['symbol']} @ €{trade['price']:.2f}")
+                    execution = result.get('execution', {})
+                    if execution.get('success') and execution.get('action') in ['BUY', 'SELL']:
+                        print(f"  ✓ Executed {execution.get('action')} order")
+                        if execution.get('symbol'):
+                            print(f"     • {execution.get('action')} {execution.get('symbol', 'N/A')} @ €{execution.get('price', 0):.2f}")
                     else:
-                        print(f"  → No trades executed (decision: {result.get('decision', 'HOLD')})")
+                        print(f"  → No trades executed (decision: {result.get('decision', {}).get('action', 'HOLD')})")
                     success_count += 1
                 else:
                     print(f"  ✗ Failed: {result.get('error', 'Unknown error')}")
@@ -172,7 +176,7 @@ def run_trading_session(job_name: str = "manual_session"):
 
     finally:
         db.close()
-        research_orchestrator.close()
+        research_orchestrator.cleanup()
 
 
 def main():

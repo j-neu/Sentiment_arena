@@ -134,6 +134,7 @@ class ResearchService:
     ) -> List[Dict[str, Any]]:
         """
         Perform web search using DuckDuckGo HTML interface (no API key needed).
+        Includes retry logic with exponential backoff.
 
         Args:
             query: Search query
@@ -143,28 +144,65 @@ class ResearchService:
         Returns:
             List of search results
         """
-        try:
-            # Use DuckDuckGo HTML search (no API key required)
-            search_url = f"https://html.duckduckgo.com/html/?q={quote_plus(query)}"
+        max_retries = 3
+        retry_delay = 1  # seconds
 
-            response = self.session.get(search_url, timeout=10)
-            response.raise_for_status()
+        for attempt in range(max_retries):
+            try:
+                # Use DuckDuckGo HTML search (no API key required)
+                search_url = f"https://html.duckduckgo.com/html/?q={quote_plus(query)}"
 
-            # Parse results (basic HTML parsing)
-            results = self._parse_duckduckgo_results(response.text, max_results)
+                # Add retry-specific headers
+                headers = {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                    "Accept-Language": "en-US,en;q=0.5",
+                    "Accept-Encoding": "gzip, deflate",
+                    "DNT": "1",
+                    "Connection": "keep-alive",
+                    "Upgrade-Insecure-Requests": "1"
+                }
 
-            # Filter by preferred sources if available
-            filtered_results = self._filter_by_source(results)
+                response = self.session.get(search_url, timeout=15, headers=headers)
+                response.raise_for_status()
 
-            return filtered_results[:max_results]
+                # Parse results (basic HTML parsing)
+                results = self._parse_duckduckgo_results(response.text, max_results)
 
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Web search failed: {e}")
-            return []
+                if results:
+                    # Filter by preferred sources if available
+                    filtered_results = self._filter_by_source(results)
+                    logger.info(f"Web search successful on attempt {attempt + 1}: found {len(filtered_results)} results")
+                    return filtered_results[:max_results]
+                else:
+                    logger.warning(f"No results parsed on attempt {attempt + 1}")
+                    if attempt < max_retries - 1:
+                        time.sleep(retry_delay)
+                        retry_delay *= 2  # Exponential backoff
+                        continue
+                    else:
+                        logger.warning("No results after all retry attempts, returning empty list")
+                        return []
 
-        except Exception as e:
-            logger.error(f"Unexpected error during web search: {e}")
-            return []
+            except requests.exceptions.RequestException as e:
+                logger.warning(f"Web search attempt {attempt + 1} failed: {e}")
+                if attempt < max_retries - 1:
+                    time.sleep(retry_delay)
+                    retry_delay *= 2  # Exponential backoff
+                else:
+                    logger.error(f"Web search failed after {max_retries} attempts: {e}")
+                    return []
+
+            except Exception as e:
+                logger.error(f"Unexpected error during web search attempt {attempt + 1}: {e}")
+                if attempt < max_retries - 1:
+                    time.sleep(retry_delay)
+                    retry_delay *= 2
+                else:
+                    logger.error(f"Web search failed with unexpected error after {max_retries} attempts")
+                    return []
+
+        return []
 
     def _parse_duckduckgo_results(
         self,
@@ -184,41 +222,111 @@ class ResearchService:
         results = []
 
         try:
-            # Simple HTML parsing (looking for result links)
-            # In production, you'd use BeautifulSoup, but keeping dependencies minimal
             import re
 
-            # Find all result blocks
-            result_pattern = r'result__a.*?href="([^"]+)".*?>([^<]+)</a>'
-            snippet_pattern = r'result__snippet.*?>([^<]+)</a>'
+            # Multiple patterns to handle different DuckDuckGo HTML structures
+            patterns = [
+                # Pattern 1: Standard result links
+                r'<a[^>]+class="[^"]*result__a[^"]*"[^>]+href="([^"]+)"[^>]*>([^<]+)</a>',
+                # Pattern 2: Alternative result structure
+                r'<a[^>]+href="([^"]+)"[^>]*>([^<]+)</a>',
+                # Pattern 3: DuckDuckGo instant answer style
+                r'<a[^>]+href="([^"]+)"[^>]*>([^<]+)</a>'
+            ]
 
-            matches = re.finditer(result_pattern, html, re.DOTALL)
+            found_urls = set()  # To avoid duplicates
 
-            for match in matches:
-                if len(results) >= max_results:
+            for pattern in patterns:
+                matches = re.finditer(pattern, html, re.IGNORECASE | re.DOTALL)
+                
+                for match in matches:
+                    if len(results) >= max_results:
+                        break
+
+                    url = match.group(1)
+                    title = match.group(2).strip()
+
+                    # Skip if already found or invalid URL
+                    if url in found_urls or not url.startswith('http'):
+                        continue
+                    
+                    found_urls.add(url)
+
+                    # Extract snippet from nearby text
+                    snippet = ""
+                    start_pos = max(0, match.start() - 200)
+                    end_pos = min(len(html), match.end() + 300)
+                    nearby_text = html[start_pos:end_pos]
+                    
+                    # Look for snippet patterns
+                    snippet_patterns = [
+                        r'result__snippet[^>]*>([^<]+)',
+                        r'snippet[^>]*>([^<]+)',
+                        r'description[^>]*>([^<]+)',
+                        r'<p[^>]*>([^<]+)</p>'
+                    ]
+                    
+                    for snippet_pattern in snippet_patterns:
+                        snippet_match = re.search(snippet_pattern, nearby_text, re.IGNORECASE)
+                        if snippet_match:
+                            snippet = snippet_match.group(1).strip()
+                            if len(snippet) > 10:  # Only use substantial snippets
+                                break
+
+                    # Clean up title and snippet
+                    title = re.sub(r'<[^>]+>', '', title).strip()
+                    snippet = re.sub(r'<[^>]+>', '', snippet).strip()
+                    
+                    # Extract domain from URL
+                    domain_match = re.search(r'https?://([^/]+)', url)
+                    source = domain_match.group(1) if domain_match else "unknown"
+
+                    results.append({
+                        "title": title[:200] if title else "No title",
+                        "url": url,
+                        "source": source,
+                        "snippet": snippet[:300] if snippet else "No description available",
+                        "date": datetime.now().isoformat(),
+                        "relevance": "high" if any(s in source for s in self.PREFERRED_SOURCES) else "medium"
+                    })
+
+                if results:  # If we found results with this pattern, stop trying others
                     break
 
-                url = match.group(1)
-                title = match.group(2).strip()
+            # If still no results, try a fallback approach
+            if not results:
+                logger.warning("No results found with standard patterns, trying fallback")
+                
+                # Look for any links that might be search results
+                link_pattern = r'<a[^>]+href="(https?://[^"]+)"[^>]*>([^<]+)</a>'
+                matches = re.finditer(link_pattern, html, re.IGNORECASE)
+                
+                for match in matches:
+                    if len(results) >= max_results:
+                        break
 
-                # Try to extract snippet
-                snippet = ""
-                snippet_match = re.search(snippet_pattern, html[match.end():match.end()+500])
-                if snippet_match:
-                    snippet = snippet_match.group(1).strip()
+                    url = match.group(1)
+                    title = match.group(2).strip()
+                    
+                    # Filter out obvious non-news links
+                    if any(exclude in url.lower() for exclude in ['duckduckgo', 'facebook', 'twitter', 'youtube', 'wikipedia']):
+                        continue
+                    
+                    if url not in found_urls:
+                        found_urls.add(url)
+                        
+                        # Extract domain
+                        domain_match = re.search(r'https?://([^/]+)', url)
+                        source = domain_match.group(1) if domain_match else "unknown"
 
-                # Extract domain from URL
-                domain_match = re.search(r'https?://([^/]+)', url)
-                source = domain_match.group(1) if domain_match else "unknown"
-
-                results.append({
-                    "title": title,
-                    "url": url,
-                    "source": source,
-                    "snippet": snippet,
-                    "date": datetime.now().isoformat(),
-                    "relevance": "high" if any(s in source for s in self.PREFERRED_SOURCES) else "medium"
-                })
+                        results.append({
+                            "title": re.sub(r'<[^>]+>', '', title)[:200],
+                            "url": url,
+                            "source": source,
+                            "snippet": "Search result found",
+                            "date": datetime.now().isoformat(),
+                            "relevance": "medium"
+                        })
 
         except Exception as e:
             logger.error(f"Failed to parse search results: {e}")

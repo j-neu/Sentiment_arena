@@ -140,7 +140,7 @@ class EnhancedResearchPipeline:
             raw_results = []
             for query in queries:
                 search_results = self.research_service.search_stock_news(
-                    query=query,
+                    symbol=symbol,
                     max_results=5
                 )
                 raw_results.extend(search_results)

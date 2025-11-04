@@ -79,6 +79,7 @@ class TradingScheduler:
 
     def __init__(
         self,
+        db: Session,
         market_data_service: Optional[MarketDataService] = None,
         openrouter_api_key: Optional[str] = None,
         alphavantage_api_key: Optional[str] = None,
@@ -88,13 +89,15 @@ class TradingScheduler:
         Initialize the trading scheduler.
 
         Args:
+            db: The database session.
             market_data_service: Market data service instance
             openrouter_api_key: OpenRouter API key for LLM agents
             alphavantage_api_key: Alpha Vantage API key (optional)
             finnhub_api_key: Finnhub API key (optional)
         """
+        self.db = db
         self.scheduler = BackgroundScheduler(timezone=pytz.timezone('Europe/Berlin'))
-        self.market_data_service = market_data_service or MarketDataService()
+        self.market_data_service = market_data_service
         self.openrouter_api_key = openrouter_api_key
         self.alphavantage_api_key = alphavantage_api_key
         self.finnhub_api_key = finnhub_api_key
@@ -185,6 +188,8 @@ class TradingScheduler:
             models = db.query(Model).all()
             logger.info(f"Running pre-market research for {len(models)} models")
 
+            trading_engine = TradingEngine(db, self.market_data_service)
+
             for model in models:
                 try:
                     logger.info(f"\n--- Pre-market research for {model.name} (ID: {model.id}) ---")
@@ -193,6 +198,8 @@ class TradingScheduler:
                     agent = LLMAgent(
                         db=db,
                         model_id=model.id,
+                        trading_engine=trading_engine,
+                        market_data_service=self.market_data_service,
                         use_complete_research=True,
                         alphavantage_api_key=self.alphavantage_api_key,
                         finnhub_api_key=self.finnhub_api_key
@@ -257,6 +264,8 @@ class TradingScheduler:
             models = db.query(Model).all()
             logger.info(f"Running afternoon research for {len(models)} models")
 
+            trading_engine = TradingEngine(db, self.market_data_service)
+
             for model in models:
                 try:
                     logger.info(f"\n--- Afternoon research for {model.name} (ID: {model.id}) ---")
@@ -265,6 +274,8 @@ class TradingScheduler:
                     agent = LLMAgent(
                         db=db,
                         model_id=model.id,
+                        trading_engine=trading_engine,
+                        market_data_service=self.market_data_service,
                         use_complete_research=True,
                         alphavantage_api_key=self.alphavantage_api_key,
                         finnhub_api_key=self.finnhub_api_key

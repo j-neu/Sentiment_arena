@@ -34,15 +34,16 @@ class TradingEngine:
     Enforces market hours, validates symbols, and applies trading fees.
     """
 
-    def __init__(self, db: Session):
+    def __init__(self, db: Session, market_data_service: MarketDataService):
         """
         Initialize the trading engine.
 
         Args:
             db: SQLAlchemy database session
+            market_data_service: An instance of MarketDataService
         """
         self.db = db
-        self.market_data = MarketDataService(db)
+        self.market_data = market_data_service
         self.trading_fee = Decimal(str(settings.TRADING_FEE))
 
         logger.info(f"TradingEngine initialized with €{self.trading_fee} fee per trade")

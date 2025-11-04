@@ -23,6 +23,7 @@ from backend.services.research import ResearchService
 from backend.services.market_data import MarketDataService
 from backend.services.trading_engine import TradingEngine
 from backend.services.complete_research_orchestrator import CompleteResearchOrchestrator
+from backend.constants import DAX_TOP_5
 
 logger = get_logger(__name__)
 
@@ -41,6 +42,8 @@ class LLMAgent:
         self,
         db: Session,
         model_id: int,
+        trading_engine: TradingEngine,
+        market_data_service: MarketDataService,
         api_key: Optional[str] = None,
         prompt_path: Optional[str] = None,
         use_complete_research: bool = True,
@@ -49,10 +52,11 @@ class LLMAgent:
     ):
         """
         Initialize the LLM agent.
-
         Args:
             db: Database session
             model_id: ID of the model this agent represents
+            trading_engine: The trading engine
+            market_data_service: The market data service
             api_key: Optional OpenRouter API key
             prompt_path: Optional path to custom prompt template file
             use_complete_research: Use complete research orchestrator (default: True)
@@ -74,8 +78,8 @@ class LLMAgent:
         # Initialize services
         self.openrouter = OpenRouterClient(api_key)
         self.research = ResearchService()
-        self.market_data = MarketDataService(db)
-        self.trading_engine = TradingEngine(db)
+        self.market_data = market_data_service
+        self.trading_engine = trading_engine
 
         # Initialize complete research orchestrator if enabled
         self.complete_research = None
@@ -251,8 +255,9 @@ class LLMAgent:
             symbols = [pos.symbol for pos in positions[:3]]
 
             if not symbols:
-                # If no positions, research general market
-                symbols = ["^GDAXI"]  # DAX index
+                # If no positions, research top DAX stocks for opportunities
+                symbols = DAX_TOP_5[:3]  # Top 3 DAX stocks: SAP, Siemens, Airbus
+                logger.info(f"No positions found, researching top DAX stocks: {symbols}")
 
             # Conduct complete research for each symbol
             all_research = []
